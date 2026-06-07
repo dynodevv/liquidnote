@@ -27,7 +27,7 @@ import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
-import com.kyant.backdrop.rememberBackdrop
+import com.kyant.backdrop.backdrops.rememberBackdrop
 
 @Composable
 fun LiquidSurface(
