@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
@@ -38,7 +39,7 @@ fun LiquidSurface(
     containerAlpha: Float = 0.35f,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val backdrop = rememberCanvasBackdrop()
+    val backdrop = rememberCanvasBackdrop {}
     val isLight = !androidx.compose.foundation.isSystemInDarkTheme()
     val containerColor = if (isLight) Color(0xFFFAFAFA).copy(containerAlpha) else Color(0xFF1C1C1E).copy(containerAlpha)
 
@@ -70,7 +71,7 @@ fun LiquidButton(
     content: @Composable RowScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val backdrop = rememberCanvasBackdrop()
+    val backdrop = rememberCanvasBackdrop {}
     val isLight = !androidx.compose.foundation.isSystemInDarkTheme()
     val containerColor = if (isLight) Color(0xFFFAFAFA).copy(0.4f) else Color(0xFF1C1C1E).copy(0.4f)
 
@@ -106,7 +107,7 @@ fun LiquidIconButton(
     icon: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val backdrop = rememberCanvasBackdrop()
+    val backdrop = rememberCanvasBackdrop {}
     val isLight = !androidx.compose.foundation.isSystemInDarkTheme()
     val containerColor = if (isLight) Color(0xFFFAFAFA).copy(0.4f) else Color(0xFF1C1C1E).copy(0.4f)
 
@@ -143,7 +144,7 @@ fun LiquidFAB(
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val backdrop = rememberCanvasBackdrop()
+    val backdrop = rememberCanvasBackdrop {}
     val isLight = !androidx.compose.foundation.isSystemInDarkTheme()
     val containerColor = if (isLight) Color(0xFF007AFF).copy(0.8f) else Color(0xFF0A84FF).copy(0.8f)
 
@@ -186,7 +187,7 @@ fun LiquidSearchBar(
     modifier: Modifier = Modifier,
     placeholder: String = "Search"
 ) {
-    val backdrop = rememberCanvasBackdrop()
+    val backdrop = rememberCanvasBackdrop {}
     val isLight = !androidx.compose.foundation.isSystemInDarkTheme()
     val containerColor = if (isLight) Color(0xFFE5E5EA).copy(0.5f) else Color(0xFF2C2C2E).copy(0.5f)
 

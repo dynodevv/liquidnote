@@ -320,10 +320,10 @@ fun NoteEditorScreen(
                             ToolbarButton("B", FontWeight.Bold) {
                                 applyInlineTag(editorBlocks, focusedIndex, "[b]", "[/b]")
                             }
-                            ToolbarButton("I", FontStyle.Italic) {
+                            ToolbarButton("I", fontStyle = FontStyle.Italic) {
                                 applyInlineTag(editorBlocks, focusedIndex, "[i]", "[/i]")
                             }
-                            ToolbarButton("`", FontFamily.Monospace) {
+                            ToolbarButton("`", fontFamily = FontFamily.Monospace) {
                                 applyInlineTag(editorBlocks, focusedIndex, "[c]", "[/c]")
                             }
                             ToolbarButton("L", textDecoration = TextDecoration.Underline) {
