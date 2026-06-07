@@ -239,9 +239,9 @@ class NoteEditorViewModel(
             _isAiLoading.value = true
             addAiMessage(message, true)
 
-            val endpoint = settingsManager.aiEndpoint.value
-            val key = settingsManager.aiKey.value
-            val model = settingsManager.aiModel.value
+            val endpoint = settingsManager.aiEndpoint.first()
+            val key = settingsManager.aiKey.first()
+            val model = settingsManager.aiModel.first()
 
             if (endpoint.isBlank() || key.isBlank()) {
                 _isAiLoading.value = false
