@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.liquidnote.app"
-    compileSdk = 37
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.liquidnote.app"
@@ -54,7 +54,7 @@ android {
 
 dependencies {
     // Backdrop / Liquid Glass
-    implementation("io.github.kyant0:backdrop:2.0.0")
+    implementation("io.github.kyant0:backdrop:1.0.6")
 
     // Compose BOM
     val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
