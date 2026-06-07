@@ -168,8 +168,7 @@ fun SettingsScreen(
                                     lens(6f.dp.toPx(), 6f.dp.toPx())
                                 },
                                 onDrawSurface = {
-                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                    drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
                                 }
                             )
                             .clickable {
@@ -215,8 +214,7 @@ fun SettingsScreen(
                                     lens(6f.dp.toPx(), 6f.dp.toPx())
                                 },
                                 onDrawSurface = {
-                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                    drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
                                 }
                             )
                             .clickable { importLauncher.launch("text/markdown") }
@@ -246,8 +244,7 @@ fun SettingsScreen(
                                     lens(6f.dp.toPx(), 6f.dp.toPx())
                                 },
                                 onDrawSurface = {
-                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                    drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
                                 }
                             )
                             .clickable {
@@ -360,6 +357,7 @@ private fun SettingsTextField(
     placeholder: String = "",
     isPassword: Boolean = false
 ) {
+    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
     Column {
         Text(
             text = label,
@@ -379,8 +377,7 @@ private fun SettingsTextField(
                         lens(4f.dp.toPx(), 4f.dp.toPx())
                     },
                     onDrawSurface = {
-                        val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                        drawRect(if (d) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
+                        drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
                     }
                 )
                 .padding(horizontal = 12.dp, vertical = 10.dp)

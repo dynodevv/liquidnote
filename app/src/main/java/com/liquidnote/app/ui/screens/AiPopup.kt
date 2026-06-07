@@ -65,6 +65,8 @@ fun AiPopup(
     val backdrop = rememberLayerBackdrop()
     val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
     val glassSurface = if (isDark) Color(0xFFFAFAFA).copy(0.35f) else Color(0xFF121212).copy(0.35f)
+    val buttonSurface = if (isDark) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f)
+    val sendSurface = if (isDark) Color(0xFF0A84FF).copy(0.8f) else Color(0xFF007AFF).copy(0.8f)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -129,8 +131,7 @@ fun AiPopup(
                                 shape = { Capsule() },
                                 effects = { blur(4f.dp.toPx()); vibrancy() },
                                 onDrawSurface = {
-                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
+                                    drawRect(buttonSurface)
                                 }
                             )
                             .clickable { viewModel.revertAiEdits() }
@@ -190,8 +191,7 @@ fun AiPopup(
                                     lens(6f.dp.toPx(), 6f.dp.toPx())
                                 },
                                 onDrawSurface = {
-                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
-                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
+                                    drawRect(buttonSurface)
                                 }
                             )
                             .padding(horizontal = 12.dp, vertical = 10.dp)

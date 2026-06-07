@@ -77,9 +77,9 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.kyant.shapes.Capsule
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.snapshotFlow
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -460,7 +460,6 @@ private fun ToolbarGlassButton(label: String, onClick: () -> Unit) {
                     blur(4f.dp.toPx())
                 },
                 onDrawSurface = {
-                    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
                     drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
                 }
             )
@@ -495,7 +494,6 @@ private fun BlockGlassButton(
                     blur(4f.dp.toPx())
                 },
                 onDrawSurface = {
-                    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
                     drawRect(if (isDark) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
                 }
             )

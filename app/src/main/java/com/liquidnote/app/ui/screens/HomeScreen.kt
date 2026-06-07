@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -62,6 +63,13 @@ import com.kyant.shapes.Capsule
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+fun androidx.compose.ui.graphics.Color.toColorInt(): Int {
+    return (alpha * 255 + 0.5f).toInt().shl(24) or
+           (red * 255 + 0.5f).toInt().shl(16) or
+           (green * 255 + 0.5f).toInt().shl(8) or
+           (blue * 255 + 0.5f).toInt()
+}
 
 @Composable
 fun HomeScreen(
@@ -282,7 +290,7 @@ fun HomeScreen(
             confirmButton = {
                 TextButton(onClick = {
                     if (catName.isNotBlank()) {
-                        viewModel.createCategory(catName, selColor.toArgb())
+                        viewModel.createCategory(catName, selColor.toColorInt())
                         showCategoryDialog = false
                     }
                 }) { Text(stringResource(R.string.save)) }
