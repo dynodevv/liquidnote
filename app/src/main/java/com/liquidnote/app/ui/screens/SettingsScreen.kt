@@ -2,6 +2,7 @@ package com.liquidnote.app.ui.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -41,11 +43,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.liquidnote.app.LiquidNoteApplication
 import com.liquidnote.app.R
-import com.liquidnote.app.ui.components.LiquidButton
-import com.liquidnote.app.ui.components.LiquidSurface
-import com.liquidnote.app.ui.theme.AppleBlue
 import com.liquidnote.app.ui.viewmodel.AppViewModelFactory
 import com.liquidnote.app.ui.viewmodel.SettingsViewModel
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.lens
+import com.kyant.backdrop.effects.vibrancy
+import com.kyant.shapes.Capsule
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,8 +82,7 @@ fun SettingsScreen(
                     context.contentResolver.openInputStream(uri)?.use { stream ->
                         val (title, blocks) = com.liquidnote.app.util.MarkdownImport.parseMarkdownFromStream(stream)
                         val note = com.liquidnote.app.model.Note(title = title)
-                        val noteId = app.repository.saveNoteWithBlocks(note, blocks)
-                        // Note saved, user can navigate to it
+                        app.repository.saveNoteWithBlocks(note, blocks)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -86,60 +91,31 @@ fun SettingsScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        // Top bar
-        LiquidSurface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
-            blurRadius = 20.dp,
-            containerAlpha = 0.3f
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.cancel),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Text(
-                    text = stringResource(R.string.settings),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.padding(12.dp))
-            }
-        }
+    val backdrop = rememberLayerBackdrop()
+    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
+    val glassSurface = if (isDark) Color(0xFFFAFAFA).copy(0.3f) else Color(0xFF121212).copy(0.3f)
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background scrolling content
         Column(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .layerBackdrop(backdrop)
+                .safeContentPadding()
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            // AI Section
+            Spacer(modifier = Modifier.height(60.dp)) // space for top glass bar
+
             Text(
                 text = "AI Assistant",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
             )
 
-            LiquidSurface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                blurRadius = 14.dp,
-                containerAlpha = 0.25f
-            ) {
+            // AI Settings glass card
+            GlassCard(backdrop = backdrop, surface = glassSurface) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -158,16 +134,13 @@ fun SettingsScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-
                     SettingsTextField(
                         label = stringResource(R.string.ai_endpoint),
                         value = endpoint,
                         onValueChange = { endpoint = it },
                         placeholder = "https://api.openai.com/v1"
                     )
-
                     Spacer(modifier = Modifier.height(12.dp))
-
                     SettingsTextField(
                         label = stringResource(R.string.ai_key),
                         value = key,
@@ -175,26 +148,37 @@ fun SettingsScreen(
                         placeholder = "sk-...",
                         isPassword = true
                     )
-
                     Spacer(modifier = Modifier.height(12.dp))
-
                     SettingsTextField(
                         label = stringResource(R.string.ai_model),
                         value = model,
                         onValueChange = { model = it },
                         placeholder = "gpt-4o"
                     )
-
                     Spacer(modifier = Modifier.height(12.dp))
-
-                    LiquidButton(
-                        onClick = {
-                            viewModel.setAiEndpoint(endpoint)
-                            viewModel.setAiKey(key)
-                            viewModel.setAiModel(model)
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        blurRadius = 6.dp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .drawBackdrop(
+                                backdrop = rememberLayerBackdrop(),
+                                shape = { Capsule() },
+                                effects = {
+                                    vibrancy()
+                                    blur(6f.dp.toPx())
+                                    lens(6f.dp.toPx(), 6f.dp.toPx())
+                                },
+                                onDrawSurface = {
+                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
+                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                }
+                            )
+                            .clickable {
+                                viewModel.setAiEndpoint(endpoint)
+                                viewModel.setAiKey(key)
+                                viewModel.setAiModel(model)
+                            }
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(R.string.save),
@@ -207,24 +191,37 @@ fun SettingsScreen(
                 }
             }
 
-            // Import/Export
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Data",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
 
-            LiquidSurface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                blurRadius = 14.dp,
-                containerAlpha = 0.25f
-            ) {
+            // Data glass card
+            GlassCard(backdrop = backdrop, surface = glassSurface) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    LiquidButton(
-                        onClick = { importLauncher.launch("text/markdown") },
-                        shape = RoundedCornerShape(12.dp),
-                        blurRadius = 6.dp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .drawBackdrop(
+                                backdrop = rememberLayerBackdrop(),
+                                shape = { Capsule() },
+                                effects = {
+                                    vibrancy()
+                                    blur(6f.dp.toPx())
+                                    lens(6f.dp.toPx(), 6f.dp.toPx())
+                                },
+                                onDrawSurface = {
+                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
+                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                }
+                            )
+                            .clickable { importLauncher.launch("text/markdown") }
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(R.string.import_notes),
@@ -237,31 +234,46 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    LiquidButton(
-                        onClick = {
-                            scope.launch {
-                                try {
-                                    val uris = viewModel.exportAllNotes(context)
-                                    if (uris.isNotEmpty()) {
-                                        val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND_MULTIPLE).apply {
-                                            type = "text/markdown"
-                                            putParcelableArrayListExtra(
-                                                android.content.Intent.EXTRA_STREAM,
-                                                ArrayList(uris)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .drawBackdrop(
+                                backdrop = rememberLayerBackdrop(),
+                                shape = { Capsule() },
+                                effects = {
+                                    vibrancy()
+                                    blur(6f.dp.toPx())
+                                    lens(6f.dp.toPx(), 6f.dp.toPx())
+                                },
+                                onDrawSurface = {
+                                    val d = !androidx.compose.foundation.isSystemInDarkTheme()
+                                    drawRect(if (d) Color(0xFFFAFAFA).copy(0.25f) else Color(0xFF121212).copy(0.25f))
+                                }
+                            )
+                            .clickable {
+                                scope.launch {
+                                    try {
+                                        val uris = viewModel.exportAllNotes(context)
+                                        if (uris.isNotEmpty()) {
+                                            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND_MULTIPLE).apply {
+                                                type = "text/markdown"
+                                                putParcelableArrayListExtra(
+                                                    android.content.Intent.EXTRA_STREAM,
+                                                    ArrayList(uris)
+                                                )
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(
+                                                android.content.Intent.createChooser(shareIntent, "Export notes")
                                             )
-                                            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                         }
-                                        context.startActivity(
-                                            android.content.Intent.createChooser(shareIntent, "Export notes")
-                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
                                     }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
                                 }
                             }
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        blurRadius = 6.dp
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(R.string.export),
@@ -273,9 +285,70 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // Glass top bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBackdrop(
+                    backdrop = backdrop,
+                    shape = { Capsule() },
+                    effects = {
+                        vibrancy()
+                        blur(10f.dp.toPx())
+                        lens(10f.dp.toPx(), 10f.dp.toPx())
+                    },
+                    onDrawSurface = { drawRect(glassSurface) }
+                )
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.cancel),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.padding(12.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun GlassCard(
+    backdrop: com.kyant.backdrop.backdrops.LayerBackdrop,
+    surface: Color,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawBackdrop(
+                backdrop = backdrop,
+                shape = { Capsule() },
+                effects = {
+                    vibrancy()
+                    blur(10f.dp.toPx())
+                    lens(10f.dp.toPx(), 10f.dp.toPx())
+                },
+                onDrawSurface = { drawRect(surface) }
+            )
+    ) {
+        content()
     }
 }
 
@@ -294,20 +367,29 @@ private fun SettingsTextField(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 4.dp)
         )
-        LiquidSurface(
-            shape = RoundedCornerShape(12.dp),
-            blurRadius = 6.dp,
-            containerAlpha = 0.2f
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBackdrop(
+                    backdrop = rememberLayerBackdrop(),
+                    shape = { Capsule() },
+                    effects = {
+                        vibrancy()
+                        blur(4f.dp.toPx())
+                        lens(4f.dp.toPx(), 4f.dp.toPx())
+                    },
+                    onDrawSurface = {
+                        val d = !androidx.compose.foundation.isSystemInDarkTheme()
+                        drawRect(if (d) Color(0xFFFAFAFA).copy(0.2f) else Color(0xFF121212).copy(0.2f))
+                    }
+                )
+                .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onBackground
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground),
+                modifier = Modifier.fillMaxWidth(),
                 decorationBox = { innerTextField ->
                     Box {
                         if (value.isBlank()) {

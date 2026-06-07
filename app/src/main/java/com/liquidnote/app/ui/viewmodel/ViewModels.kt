@@ -128,9 +128,15 @@ class NoteEditorViewModel(
                 _note.value = it.note.let { n ->
                     Note(n.id, n.title, n.categoryId, n.createdAt, n.updatedAt)
                 }
-                _blocks.value = it.blocks.map { b ->
+                val loadedBlocks = it.blocks.map { b ->
                     Block(b.id, b.noteId, BlockType.valueOf(b.type.uppercase()), b.content, b.orderIndex, b.isChecked)
                 }.sortedBy { it.order }
+                _blocks.value = loadedBlocks.ifEmpty {
+                    listOf(Block(noteId = noteId, type = BlockType.PARAGRAPH, content = "", order = 0))
+                }
+            } ?: run {
+                _note.value = Note()
+                _blocks.value = listOf(Block(noteId = 0, type = BlockType.PARAGRAPH, content = "", order = 0))
             }
         }
     }
@@ -280,7 +286,9 @@ If the user just asks a question or wants advice, respond naturally without Mark
         if (title.isNotBlank()) {
             _note.value = _note.value.copy(title = title)
         }
-        _blocks.value = newBlocks.mapIndexed { i, b -> b.copy(noteId = _note.value.id, order = i) }
+        _blocks.value = newBlocks.mapIndexed { i, b -> b.copy(noteId = _note.value.id, order = i) }.ifEmpty {
+            listOf(Block(noteId = _note.value.id, type = BlockType.PARAGRAPH, content = "", order = 0))
+        }
         _aiEdited.value = true
     }
 
