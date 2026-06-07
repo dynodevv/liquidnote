@@ -449,6 +449,7 @@ private fun wrapSelection(blocks: MutableList<EditorBlock>, index: Int, open: St
 
 @Composable
 private fun ToolbarGlassButton(label: String, onClick: () -> Unit) {
+    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
     Box(
         modifier = Modifier
             .padding(2.dp)
@@ -482,6 +483,7 @@ private fun BlockGlassButton(
     focusedIndex: Int,
     editorBlocks: MutableList<EditorBlock>
 ) {
+    val isDark = !androidx.compose.foundation.isSystemInDarkTheme()
     val selected = focusedIndex >= 0 && editorBlocks.getOrNull(focusedIndex)?.type == type
     Box(
         modifier = Modifier
